@@ -1,0 +1,58 @@
+version: '3.6'
+
+services:
+
+  my_rabbitmq:
+    image: rabbitmq:3-management # with HTTP management UI
+    hostname: root_node
+    container_name: root_node
+    networks:
+      - rabbitmq_network
+    environment:
+      - RABBITMQ_DEFAULT_USER=user # for HTTP management UI
+      - RABBITMQ_DEFAULT_PASS=pass # for HTTP management UI
+      - ERLANG_COOKIE=abcdefg
+    ports:
+      - 5672:5672 # The standard AMQP protocol port
+      - 15672:15672 # HTTP management UI
+    volumes:
+      - rabbitmq:/data/rabbitmq
+
+  node_1:
+    image: rabbitmq:latest
+    container_name: node_1
+    links:
+      - my_rabbitmq
+    environment:
+      - ERLANG_COOKIE=abcdefg
+      - CLUSTERED=true
+      - CLUSTER_WITH=my_rabbitmq
+      - ENABLE_RAM=true
+      - RAM_NODE=true
+    ports:
+      - "5673:5672"
+    networks:
+      - rabbitmq_network
+
+  node_2:
+    image: rabbitmq:latest
+    container_name: node_2
+    links:
+      - my_rabbitmq
+      - node_1
+    environment:
+      - ERLANG_COOKIE=abcdefg
+      - CLUSTERED=true
+      - CLUSTER_WITH=my_rabbitmq
+      - ENABLE_RAM=true
+      - RAM_NODE=true
+    ports:
+      - "5674:5672"
+    networks:
+      - rabbitmq_network
+
+volumes:
+  rabbitmq:
+networks:
+  rabbitmq_network:
+    driver: bridge
