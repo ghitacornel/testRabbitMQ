@@ -3,7 +3,6 @@ package simple;
 import com.rabbitmq.client.*;
 
 import java.nio.charset.StandardCharsets;
-import java.rmi.RemoteException;
 
 public class Receive {
 
