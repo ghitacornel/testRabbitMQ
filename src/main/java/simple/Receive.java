@@ -1,11 +1,9 @@
 package simple;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DeliverCallback;
+import com.rabbitmq.client.*;
 
 import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
 
 public class Receive {
 
@@ -29,7 +27,9 @@ public class Receive {
             System.out.println(" [x] Received '" + message + "'");
         };
 
-        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
-        });
+        CancelCallback cancelCallback = (consumerTag) -> {
+        };
+
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, cancelCallback);
     }
 }
